@@ -4,7 +4,7 @@ class X {
    * @param {string} y - this is a param.
    */
   method(x, y) {
-    console.assert(typeof x === 'number');
-    console.assert(typeof y === 'string');
+    console.assert(typeof x === "number");
+    console.assert(typeof y === "string");
   }
 }

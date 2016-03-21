@@ -1,5 +1,11 @@
 // LICENSE : MIT
 "use strict";
+class SimpleGenerator {
+  assert(expression) {
+    return `console.assert(${expression});`;
+  }
+}
+const simpleGenerator = new SimpleGenerator();
 function maybeSkip(path) {
   const {node} = path;
   if (node.leadingComments != null && node.leadingComments.length > 0) {
@@ -7,12 +13,17 @@ function maybeSkip(path) {
   }
   return true;
 }
-import {Attachment} from "jsdoc-to-assert"
+import {CommentConverter} from "jsdoc-to-assert"
+
 export default function ({types: t, template}) {
-  const injectAssert = (path, leadingComments) => {
+  const injectAssert = (path, leadingComments, options) => {
+    const isSimple = options.simple || false;
+    const converterOptions = isSimple ? {
+      generator: simpleGenerator
+    } : {};
     const comment = leadingComments[0];
     if (comment.type === 'CommentBlock') {
-      const functionDeclarationString = Attachment.FunctionDeclarationString(comment);
+      const functionDeclarationString = CommentConverter.toAsserts(comment, converterOptions).join("\n");
       const buildAssert = template(functionDeclarationString)();
       path.get("body").unshiftContainer("body", buildAssert);
     }
@@ -44,7 +55,7 @@ export default function ({types: t, template}) {
           if (declaration.isVariableDeclaration()) {
             return;
           }
-          injectAssert(declaration, node.leadingComments)
+          injectAssert(declaration, node.leadingComments, this.opts)
         }
       },
       // method
@@ -53,7 +64,7 @@ export default function ({types: t, template}) {
           return;
         }
         const {node} = path;
-        injectAssert(path, node.leadingComments);
+        injectAssert(path, node.leadingComments, this.opts);
       }
     }
   };
