@@ -1,4 +1,4 @@
-# babel-plugin-jsdoc-to-assert
+# babel-plugin-jsdoc-to-assert [![Build Status](https://travis-ci.org/azu/babel-plugin-jsdoc-to-assert.svg?branch=master)](https://travis-ci.org/azu/babel-plugin-jsdoc-to-assert)
 
 Babel plugin for [jsdoc-to-assert](https://github.com/azu/jsdoc-to-assert "jsdoc-to-assert").
 
