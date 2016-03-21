@@ -46,6 +46,6 @@
     "mocha": "^2.4.5"
   },
   "dependencies": {
-    "jsdoc-to-assert": "^2.0.0"
+    "jsdoc-to-assert": "^2.1.0"
   }
 }

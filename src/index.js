@@ -5,7 +5,6 @@ class SimpleGenerator {
     return `console.assert(${expression});`;
   }
 }
-const simpleGenerator = new SimpleGenerator();
 function maybeSkip(path) {
   const {node} = path;
   if (node.leadingComments != null && node.leadingComments.length > 0) {
@@ -19,7 +18,7 @@ export default function ({types: t, template}) {
   const injectAssert = (path, leadingComments, options) => {
     const isSimple = options.simple || false;
     const converterOptions = isSimple ? {
-      generator: simpleGenerator
+      Generator: SimpleGenerator
     } : {};
     const comment = leadingComments[0];
     if (comment.type === 'CommentBlock') {
