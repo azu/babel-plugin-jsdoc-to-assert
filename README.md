@@ -61,6 +61,10 @@ In development only:
 }
 ```
 
+If build files with `NODE_ENV=production`, don't convert JSDoc to assert.
+
+    "build": "NODE_ENV=production babel src --out-dir lib --source-maps",
+
 ## Tests
 
     npm test
