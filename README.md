@@ -26,7 +26,7 @@ function myFunc(param, b, c) {
   console.assert(typeof param === 'number');
   console.assert(typeof b === 'string');
 }
-```r
+```
 
 ## Installation
 
