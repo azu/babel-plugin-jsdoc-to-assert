@@ -20,9 +20,9 @@ export default function ({types: t, template}) {
     const converterOptions = isSimple ? {
       Generator: SimpleGenerator
     } : {};
-    const comment = leadingComments[0];
+    const comment = leadingComments[leadingComments.length - 1];
     if (comment.type === 'CommentBlock') {
-      const functionDeclarationString = CommentConverter.toAsserts(comment, converterOptions).join("\n");
+      const functionDeclarationString = CommentConverter.toAsserts(comment, converterOptions).map(line => line.trim()).join("\n");
       const buildAssert = template(functionDeclarationString)();
       path.get("body").unshiftContainer("body", buildAssert);
     }
