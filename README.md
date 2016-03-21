@@ -36,11 +36,28 @@ function myFunc(param, b, c) {
 
 Via `.babelrc`
 
-```
+```json
 {
   "plugins": [
     "jsdoc-to-assert"
   ]
+}
+```
+
+In development only:
+
+```json
+{
+  "presets": [
+    "es2015"
+  ],
+  "env": {
+    "development": {
+      "plugins": [
+        "jsdoc-to-assert"
+      ]
+    }
+  }
 }
 ```
 
