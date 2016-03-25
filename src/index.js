@@ -29,21 +29,23 @@ export default function ({types: t, template}) {
   };
   return {
     visitor: {
-      // TODO: way?
-      // ArrowFunctionExpression | VariableDeclaration
-      // VariableDeclaration(path){
-      //   if (maybeSkip(path)) {
-      //     return;
-      //   }
-      //   const {node} = path;
-      //   if (node.declarations) {
-      //     node.declarations.forEach(declaration => {
-      //       const declarator = t.variableDeclarator(declaration.id, declaration.init);
-      //       console.log(declarator.unshiftContainer);
-      //       injectAssert(declarator, node.leadingComments);
-      //     });
-      //   }
-      // },
+      ["ArrowFunctionExpression|VariableDeclaration"](path){
+        if (maybeSkip(path)) {
+          return;
+        }
+        const {node} = path;
+        if (node.declarations) {
+          const declaration = path.get('declarations')[0];
+          if (declaration.isVariableDeclaration()) {
+            return;
+          }
+          const init = declaration.get("init");
+          if (!init) {
+            return;
+          }
+          injectAssert(init, node.leadingComments, this.opts)
+        }
+      },
       ExportNamedDeclaration(path){
         if (maybeSkip(path)) {
           return;
