@@ -22,9 +22,19 @@ export default function ({types: t, template}) {
     } : {};
     const comment = leadingComments[leadingComments.length - 1];
     if (comment.type === 'CommentBlock') {
-      const functionDeclarationString = CommentConverter.toAsserts(comment, converterOptions).map(line => line.trim()).join("\n");
+      const asserts = CommentConverter.toAsserts(comment, converterOptions);
+      // no have assert, ignore this
+      if (asserts.length === 0) {
+        return;
+      }
+      const functionDeclarationString = asserts
+        .filter(line => line != null)
+        .map(line => line.trim()).join("\n");
       const buildAssert = template(functionDeclarationString)();
-      path.get("body").unshiftContainer("body", buildAssert);
+      const bodyPath = path.get("body");
+      if (bodyPath && bodyPath.node && bodyPath.node["body"]) {
+        bodyPath.unshiftContainer("body", buildAssert);
+      }
     }
   };
   return {
