@@ -5,6 +5,11 @@ class SimpleGenerator {
     return `console.assert(${expression});`;
   }
 }
+class NodeAssertGenerator {
+  assert(expression) {
+    return `assert(${expression});`;
+  }
+}
 function maybeSkip(path) {
   const {node} = path;
   if (node.leadingComments != null && node.leadingComments.length > 0) {
@@ -14,12 +19,22 @@ function maybeSkip(path) {
 }
 import {CommentConverter} from "jsdoc-to-assert"
 
+function useGenerator(options = {}) {
+  if (options.simple) {
+    return {
+      Generator: SimpleGenerator
+    }
+  }
+  if (options.useNodeAssert) {
+    return {
+      Generator: NodeAssertGenerator
+    }
+  }
+  return {};
+}
 export default function ({types: t, template}) {
   const injectAssert = (path, leadingComments, options) => {
-    const isSimple = options.simple || false;
-    const converterOptions = isSimple ? {
-      Generator: SimpleGenerator
-    } : {};
+    const converterOptions = useGenerator(options);
     const comment = leadingComments[leadingComments.length - 1];
     if (comment.type === 'CommentBlock') {
       const asserts = CommentConverter.toAsserts(comment, converterOptions);
