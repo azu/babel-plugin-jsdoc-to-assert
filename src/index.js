@@ -71,7 +71,7 @@ export default function ({types: t, template}) {
           injectAssert(init, node.leadingComments, this.opts)
         }
       },
-      ExportNamedDeclaration(path){
+      ["ExportNamedDeclaration|ExportDefaultDeclaration"](path){
         if (maybeSkip(path)) {
           return;
         }
