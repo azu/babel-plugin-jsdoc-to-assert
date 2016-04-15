@@ -7,7 +7,7 @@ class SimpleGenerator {
 }
 class NodeAssertGenerator {
   assert(expression) {
-    return `assert(${expression}, ${expression});`;
+    return `assert(${expression}, '${expression}');`;
   }
 }
 function maybeSkip(path) {
