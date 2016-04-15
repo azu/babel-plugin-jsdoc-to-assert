@@ -2,6 +2,8 @@
 
 Babel plugin for [jsdoc-to-assert](https://github.com/azu/jsdoc-to-assert "jsdoc-to-assert").
 
+Preset version: [babel-preset-jsdoc-to-assert: Babel preset for jsdoc-to-assert](https://github.com/azu/babel-preset-jsdoc-to-assert)
+
 This plugin JSDoc to assertion method for runtime testing.
 
 ```js
