@@ -67,6 +67,24 @@ If build files with `NODE_ENV=production`, don't convert JSDoc to assert.
 
     "build": "NODE_ENV=production babel src --out-dir lib --source-maps",
 
+## FAQ
+
+Q. Try to use this, but throw parsing error:
+
+```js
+
+ERROR in ./src/js/framework/Context.js
+Module build failed: SyntaxError: Unterminated string constant (3:16)
+    at Parser.pp.raise (/Users/azu/.ghq/github.com/azu/svg-feeling/node_modules/babylon/index.js:1378:13)
+    at Parser.readString (/Users/azu/.ghq/github.com/azu/svg-feeling/node_modules/babylon/index.js:5402:49)
+    at Parser.getTokenFromCode (/Users/azu/.ghq/github.com/azu/svg-feeling/node_modules/babylon/index.js:52
+    ....
+ @ ./src/index.js 24:15-48
+```
+
+A. It seem to be a bug of `babel-plugin-jsdoc-to-assert`.
+Please file issue with your code :bow:
+
 ## Tests
 
     npm test
