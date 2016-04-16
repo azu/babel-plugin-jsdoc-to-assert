@@ -1,13 +1,20 @@
 // LICENSE : MIT
 "use strict";
+function trimSpaceEachLine(texts) {
+  return texts
+    .filter(line => line != null)
+    .map(line => line.trim());
+}
 class SimpleGenerator {
   assert(expression) {
-    return `console.assert(${expression});`;
+    const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
+    return `console.assert(${trimmedExpression});`;
   }
 }
 class NodeAssertGenerator {
   assert(expression) {
-    return `assert(${expression}, '${expression}');`;
+    const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
+    return `assert(${trimmedExpression}, '${trimmedExpression}');`;
   }
 }
 function maybeSkip(path) {
@@ -42,9 +49,7 @@ export default function ({types: t, template}) {
       if (asserts.length === 0) {
         return;
       }
-      const functionDeclarationString = asserts
-        .filter(line => line != null)
-        .map(line => line.trim()).join("\n");
+      const functionDeclarationString = trimSpaceEachLine(asserts).join("\n");
       const buildAssert = template(functionDeclarationString)();
       const bodyPath = path.get("body");
       if (bodyPath && bodyPath.node && bodyPath.node["body"]) {
