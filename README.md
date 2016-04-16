@@ -71,8 +71,7 @@ If build files with `NODE_ENV=production`, don't convert JSDoc to assert.
 
 Q. Try to use this, but throw parsing error:
 
-```js
-
+```
 ERROR in ./src/js/framework/Context.js
 Module build failed: SyntaxError: Unterminated string constant (3:16)
     at Parser.pp.raise (/Users/azu/.ghq/github.com/azu/svg-feeling/node_modules/babylon/index.js:1378:13)
