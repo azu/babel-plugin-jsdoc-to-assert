@@ -1,5 +1,7 @@
 // LICENSE : MIT
 "use strict";
+import {CommentConverter} from "jsdoc-to-assert"
+
 function trimSpaceEachLine(texts) {
   return texts
     .filter(line => line != null)
@@ -14,7 +16,7 @@ class SimpleGenerator {
 class NodeAssertGenerator {
   assert(expression) {
     const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
-    return `assert(${trimmedExpression}, '${trimmedExpression}');`;
+    return `assert(${trimmedExpression}, 'Invalid JSDoc param: ${trimmedExpression}');`;
   }
 }
 function maybeSkip(path) {
@@ -24,7 +26,6 @@ function maybeSkip(path) {
   }
   return true;
 }
-import {CommentConverter} from "jsdoc-to-assert"
 
 function useGenerator(options = {}) {
   if (options.simple) {
