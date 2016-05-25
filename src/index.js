@@ -19,6 +19,12 @@ class NodeAssertGenerator {
     return `assert(${trimmedExpression}, 'Invalid JSDoc param: ${trimmedExpression}');`;
   }
 }
+class ThrowGenerator {
+  assert(expression) {
+    const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
+    return `if(${trimmedExpression}){ throw new TypeError('Invalid JSDoc @param: ${trimmedExpression}'); }`;
+  }
+}
 function maybeSkip(path) {
   const {node} = path;
   if (node.leadingComments != null && node.leadingComments.length > 0) {
@@ -28,11 +34,21 @@ function maybeSkip(path) {
 }
 
 function useGenerator(options = {}) {
+  // default: console.assert
+  
+  // more simple console.assert
   if (options.simple) {
     return {
       Generator: SimpleGenerator
     }
   }
+  // throw new Error
+  if (options.throw) {
+    return {
+      Generator: ThrowGenerator
+    }
+  }
+  // assert
   if (options.useNodeAssert) {
     return {
       Generator: NodeAssertGenerator
