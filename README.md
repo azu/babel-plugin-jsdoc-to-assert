@@ -4,7 +4,9 @@ Babel plugin for [jsdoc-to-assert](https://github.com/azu/jsdoc-to-assert "jsdoc
 
 Preset version: [babel-preset-jsdoc-to-assert: Babel preset for jsdoc-to-assert](https://github.com/azu/babel-preset-jsdoc-to-assert)
 
-This plugin JSDoc to assertion method for runtime testing.
+This plugin JSDoc(`@param` and `@type`) to assertion method for runtime testing.
+
+## `@param`
 
 ```js
 /**
@@ -28,6 +30,25 @@ function myFunc(param, b, c) {
   console.assert(typeof param === 'number');
   console.assert(typeof b === 'string');
 }
+```
+
+### `@type`
+
+```js
+/**
+ * @type {string}
+ */
+const value = "s";
+```
+
+to 
+
+```js
+/**
+ * @type {string}
+ */
+const value = "s";
+console.assert(typeof value === "string");
 ```
 
 ## Installation
