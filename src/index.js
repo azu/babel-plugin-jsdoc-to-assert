@@ -1,31 +1,9 @@
 // LICENSE : MIT
 "use strict";
 import {CommentConverter} from "jsdoc-to-assert"
-
-function trimSpaceEachLine(texts) {
-  return texts
-    .filter(line => line != null)
-    .map(line => line.trim());
-}
-class SimpleGenerator {
-  assert(expression) {
-    const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
-    return `console.assert(${trimmedExpression});`;
-  }
-}
-class NodeAssertGenerator {
-  assert(expression) {
-    const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
-    return `assert(${trimmedExpression}, 'Invalid JSDoc param: ${trimmedExpression}');`;
-  }
-}
-class ThrowGenerator {
-  assert(expression) {
-    const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
-    return `if(${trimmedExpression}){ throw new TypeError('Invalid JSDoc @param: ${trimmedExpression}'); }`;
-  }
-}
-
+import {AssignmentExpressionLeftToString} from "./ast-util";
+import {trimSpaceEachLine} from "./util";
+import {NodeAssertGenerator, SimpleGenerator, ThrowGenerator} from "./generators";
 /**
  * `comment` node contain @type, return true
  * @param {Object}comment
@@ -69,19 +47,12 @@ function useGenerator(options = {}) {
   return {};
 }
 export default function({types: t, template}) {
-  const injectTypeAssert = (declarationsPath, targetPath, leadingComments, options) => {
+  const injectTypeAssert = (declarationsPath, identifierName, leadingComments, options) => {
     const converterOptions = useGenerator(options);
     const comment = leadingComments[leadingComments.length - 1];
     if (comment.type !== 'CommentBlock') {
       return;
     }
-    if (targetPath.node.id == null) {
-      return;
-    }
-    if (targetPath.node.id.type !== "Identifier") {
-      return;
-    }
-    const identifierName = targetPath.node.id.name;
     const asserts = CommentConverter.toTypeAsserts(identifierName, comment, converterOptions);
     // no have assert, ignore this
     if (asserts.length === 0) {
@@ -113,6 +84,22 @@ export default function({types: t, template}) {
   };
   return {
     visitor: {
+      ["AssignmentExpression"](path){
+        const parentPath = path.parentPath;
+        if (maybeSkip(parentPath)) {
+          return;
+        }
+        const {node} = path;
+        const leadingComments = parentPath.node.leadingComments;
+        if (leadingComments == null) {
+          return;
+        }
+        const identifierName = AssignmentExpressionLeftToString(node.left);
+        const isTypeComments = leadingComments.some(containTypeComment);
+        if (identifierName && isTypeComments) {
+          injectTypeAssert(path, identifierName, leadingComments, this.opts);
+        }
+      },
       ["ArrowFunctionExpression|VariableDeclaration"](path){
         if (maybeSkip(path)) {
           return;
@@ -130,7 +117,14 @@ export default function({types: t, template}) {
           const leadingComments = node.leadingComments;
           const isTypeComments = leadingComments.some(containTypeComment);
           if (isTypeComments) {
-            injectTypeAssert(path, firstDeclaration, leadingComments, this.opts)
+            if (firstDeclaration.node.id == null) {
+              return;
+            }
+            if (firstDeclaration.node.id.type !== "Identifier") {
+              return;
+            }
+            const identifierName = firstDeclaration.node.id.name;
+            injectTypeAssert(path, identifierName, leadingComments, this.opts);
           } else {
             injectParameterAssert(init, leadingComments, this.opts)
           }
