@@ -1,30 +1,25 @@
 // LICENSE : MIT
 "use strict";
 import {CommentConverter} from "jsdoc-to-assert"
-
-function trimSpaceEachLine(texts) {
-  return texts
-    .filter(line => line != null)
-    .map(line => line.trim());
-}
-class SimpleGenerator {
-  assert(expression) {
-    const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
-    return `console.assert(${trimmedExpression});`;
+import {AssignmentExpressionLeftToString} from "./ast-util";
+import {trimSpaceEachLine} from "./util";
+import {NodeAssertGenerator, SimpleGenerator, ThrowGenerator} from "./generators";
+/**
+ * `comment` node contain @type, return true
+ * @param {Object} comment
+ * @returns {boolean}
+ */
+function containTypeComment(comment) {
+  if (comment == null) {
+    return false;
   }
+  return /@type/.test(comment.value);
 }
-class NodeAssertGenerator {
-  assert(expression) {
-    const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
-    return `assert(${trimmedExpression}, 'Invalid JSDoc param: ${trimmedExpression}');`;
-  }
-}
-class ThrowGenerator {
-  assert(expression) {
-    const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
-    return `if(${trimmedExpression}){ throw new TypeError('Invalid JSDoc @param: ${trimmedExpression}'); }`;
-  }
-}
+/**
+ * if the `path` have not comments, return true
+ * @param {Object} path
+ * @returns {boolean}
+ */
 function maybeSkip(path) {
   const {node} = path;
   if (node.leadingComments != null && node.leadingComments.length > 0) {
@@ -35,7 +30,7 @@ function maybeSkip(path) {
 
 function useGenerator(options = {}) {
   // default: console.assert
-  
+
   // more simple console.assert
   if (options.simple) {
     return {
@@ -56,41 +51,88 @@ function useGenerator(options = {}) {
   }
   return {};
 }
-export default function ({types: t, template}) {
-  const injectAssert = (path, leadingComments, options) => {
+export default function({types: t, template}) {
+  const injectTypeAssert = (declarationsPath, identifierName, leadingComments, options) => {
     const converterOptions = useGenerator(options);
     const comment = leadingComments[leadingComments.length - 1];
-    if (comment.type === 'CommentBlock') {
-      const asserts = CommentConverter.toAsserts(comment, converterOptions);
-      // no have assert, ignore this
-      if (asserts.length === 0) {
-        return;
-      }
-      const functionDeclarationString = trimSpaceEachLine(asserts).join("\n");
-      const buildAssert = template(functionDeclarationString)();
-      const bodyPath = path.get("body");
-      if (bodyPath && bodyPath.node && bodyPath.node["body"]) {
-        bodyPath.unshiftContainer("body", buildAssert);
-      }
+    if (comment.type !== 'CommentBlock') {
+      return;
+    }
+    const asserts = CommentConverter.toTypeAsserts(identifierName, comment, converterOptions);
+    // no have assert, ignore this
+    if (asserts.length === 0) {
+      return;
+    }
+    const functionDeclarationString = trimSpaceEachLine(asserts).join("\n");
+    const builtAssert = template(functionDeclarationString)();
+    if (builtAssert) {
+      declarationsPath.insertAfter(builtAssert);
+    }
+  };
+  const injectParameterAssert = (path, leadingComments, options) => {
+    const converterOptions = useGenerator(options);
+    const comment = leadingComments[leadingComments.length - 1];
+    if (comment.type !== 'CommentBlock') {
+      return;
+    }
+    const asserts = CommentConverter.toAsserts(comment, converterOptions);
+    // no have assert, ignore this
+    if (asserts.length === 0) {
+      return;
+    }
+    const functionDeclarationString = trimSpaceEachLine(asserts).join("\n");
+    const builtAssert = template(functionDeclarationString)();
+    const bodyPath = path.get("body");
+    if (bodyPath && bodyPath.node && bodyPath.node["body"]) {
+      bodyPath.unshiftContainer("body", builtAssert);
     }
   };
   return {
     visitor: {
+      ["AssignmentExpression"](path){
+        const parentPath = path.parentPath;
+        if (maybeSkip(parentPath)) {
+          return;
+        }
+        const {node} = path;
+        const leadingComments = parentPath.node.leadingComments;
+        if (leadingComments == null) {
+          return;
+        }
+        const identifierName = AssignmentExpressionLeftToString(node.left);
+        const isTypeComments = leadingComments.some(containTypeComment);
+        if (identifierName && isTypeComments) {
+          injectTypeAssert(path, identifierName, leadingComments, this.opts);
+        }
+      },
       ["ArrowFunctionExpression|VariableDeclaration"](path){
         if (maybeSkip(path)) {
           return;
         }
         const {node} = path;
         if (node.declarations) {
-          const declaration = path.get('declarations')[0];
-          if (declaration.isVariableDeclaration()) {
+          const firstDeclaration = path.get('declarations')[0];
+          if (firstDeclaration.isVariableDeclaration()) {
             return;
           }
-          const init = declaration.get("init");
+          const init = firstDeclaration.get("init");
           if (!init) {
             return;
           }
-          injectAssert(init, node.leadingComments, this.opts)
+          const leadingComments = node.leadingComments;
+          const isTypeComments = leadingComments.some(containTypeComment);
+          if (isTypeComments) {
+            if (firstDeclaration.node.id == null) {
+              return;
+            }
+            if (firstDeclaration.node.id.type !== "Identifier") {
+              return;
+            }
+            const identifierName = firstDeclaration.node.id.name;
+            injectTypeAssert(path, identifierName, leadingComments, this.opts);
+          } else {
+            injectParameterAssert(init, leadingComments, this.opts)
+          }
         }
       },
       ["ExportNamedDeclaration|ExportDefaultDeclaration"](path){
@@ -103,7 +145,7 @@ export default function ({types: t, template}) {
           if (declaration.isVariableDeclaration()) {
             return;
           }
-          injectAssert(declaration, node.leadingComments, this.opts)
+          injectParameterAssert(declaration, node.leadingComments, this.opts)
         }
       },
       // method
@@ -112,7 +154,7 @@ export default function ({types: t, template}) {
           return;
         }
         const {node} = path;
-        injectAssert(path, node.leadingComments, this.opts);
+        injectParameterAssert(path, node.leadingComments, this.opts);
       }
     }
   };
