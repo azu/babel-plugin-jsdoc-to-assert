@@ -3,7 +3,8 @@
     [
       "../../../src/",
       {
-        "simple": true
+        "simple": true,
+        "checkAtType": true
       }
     ]
   ]

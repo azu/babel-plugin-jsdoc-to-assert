@@ -52,7 +52,11 @@ function useGenerator(options = {}) {
   return {};
 }
 export default function({types: t, template}) {
+  // work only { checkAtType: true }
   const injectTypeAssert = (declarationsPath, identifierName, leadingComments, options) => {
+    if (!options.checkAtType) {
+      return;
+    }
     const converterOptions = useGenerator(options);
     const comment = leadingComments[leadingComments.length - 1];
     if (comment.type !== 'CommentBlock') {
@@ -69,7 +73,12 @@ export default function({types: t, template}) {
       declarationsPath.insertAfter(builtAssert);
     }
   };
+  // work only { checkAtParam: true|undefined }
   const injectParameterAssert = (path, leadingComments, options) => {
+    // default: enable
+    if (options.checkAtParam === false) {
+      return;
+    }
     const converterOptions = useGenerator(options);
     const comment = leadingComments[leadingComments.length - 1];
     if (comment.type !== 'CommentBlock') {

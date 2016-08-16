@@ -4,7 +4,8 @@
       "../../../src/",
       {
         "simple": true,
-        "checkAtType": true
+        "checkAtParam": false,
+        "checkAtType": false
       }
     ]
   ]

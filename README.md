@@ -88,6 +88,15 @@ If build files with `NODE_ENV=production`, don't convert JSDoc to assert.
 
     "build": "NODE_ENV=production babel src --out-dir lib --source-maps",
 
+## Options
+
+- `checkAtParam`: boolean
+    - Default: `true`
+    - Check typing of `@param`
+- `checkAtType`: boolean
+    - Default: `false`
+    - Check typing of `@type` 
+
 ## FAQ
 
 Q. Try to use this, but throw parsing error:
@@ -104,6 +113,17 @@ Module build failed: SyntaxError: Unterminated string constant (3:16)
 
 A. It seem to be a bug of `babel-plugin-jsdoc-to-assert`.
 Please file issue with your code :bow:
+
+Q. Why `checkAtType` is default disable?
+
+It is a problem of babel transform order.
+
+ES2015 -> jsdoc-to-assert cause following problem.
+
+```
+AssertionError: Invalid JSDoc: typeof _this === "string"
++ expected - actual
+```
 
 ## Tests
 

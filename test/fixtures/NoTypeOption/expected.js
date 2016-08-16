@@ -1,0 +1,4 @@
+/**
+ * @type {MyObject}
+ */
+const value = {};
