@@ -144,6 +144,16 @@ export default function({types: t, template}) {
           }
         }
       },
+      ["FunctionExpression"](path){
+        if (maybeSkip(path.parentPath)) {
+          return;
+        }
+        const leadingComments = path.parentPath.node.leadingComments;
+        if(leadingComments == null) {
+          return;
+        }
+        injectParameterAssert(path, leadingComments, this.opts);
+      },
       ["ExportNamedDeclaration|ExportDefaultDeclaration"](path){
         if (maybeSkip(path)) {
           return;
