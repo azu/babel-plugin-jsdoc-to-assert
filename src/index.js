@@ -6,7 +6,7 @@ import {trimSpaceEachLine} from "./util";
 import {NodeAssertGenerator, SimpleGenerator, ThrowGenerator} from "./generators";
 /**
  * `comment` node contain @type, return true
- * @param {Object}comment
+ * @param {Object} comment
  * @returns {boolean}
  */
 function containTypeComment(comment) {
@@ -15,6 +15,11 @@ function containTypeComment(comment) {
   }
   return /@type/.test(comment.value);
 }
+/**
+ * if the `path` have not comments, return true
+ * @param {Object} path
+ * @returns {boolean}
+ */
 function maybeSkip(path) {
   const {node} = path;
   if (node.leadingComments != null && node.leadingComments.length > 0) {
