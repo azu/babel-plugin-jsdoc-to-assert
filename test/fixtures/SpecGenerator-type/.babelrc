@@ -1,0 +1,12 @@
+{
+  "plugins": [
+    [
+      "../../../src/",
+      {
+        "useSpecReporter": true,
+        "checkAtParam": true,
+        "checkAtType": true
+      }
+    ]
+  ]
+}

@@ -14,6 +14,8 @@ const cli = {
    */
   executeWithOptions(cliOptions, files, text, stdinFilename) {
     console.assert(typeof cliOptions === "object");
-    console.assert(Array.isArray(files));
+    console.assert(Array.isArray(files) && files.every(function (item) {
+      return typeof item === "string";
+    }));
   }
 };

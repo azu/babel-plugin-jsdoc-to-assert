@@ -3,7 +3,7 @@
 import {CommentConverter} from "jsdoc-to-assert"
 import {AssignmentExpressionLeftToString} from "./ast-util";
 import {trimSpaceEachLine} from "./util";
-import {NodeAssertGenerator, SimpleGenerator, ThrowGenerator} from "./generators";
+import {NodeAssertGenerator, SimpleGenerator, ThrowGenerator, SpecGenerator} from "./generators";
 /**
  * `comment` node contain @type, return true
  * @param {Object} comment
@@ -44,6 +44,11 @@ function useGenerator(options = {}) {
     }
   }
   // assert
+  if (options.useSpecReporter) {
+    return {
+      Generator: SpecGenerator
+    }
+  }
   if (options.useNodeAssert) {
     return {
       Generator: NodeAssertGenerator
@@ -149,7 +154,7 @@ export default function({types: t, template}) {
           return;
         }
         const leadingComments = path.parentPath.node.leadingComments;
-        if(leadingComments == null) {
+        if (leadingComments == null) {
           return;
         }
         injectParameterAssert(path, leadingComments, this.opts);
