@@ -2,4 +2,4 @@
  * @type {MyObject}
  */
 const value = {};
-console.assert(typeof MyObject === "undefined" || value instanceof MyObject);
+console.assert(typeof MyObject === "undefined" || typeof MyObject !== "function" || value instanceof MyObject);
