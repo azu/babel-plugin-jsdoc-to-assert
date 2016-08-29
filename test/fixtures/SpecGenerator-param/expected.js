@@ -4,16 +4,14 @@
  */
 function myFunc(x, y) {
   if (!(typeof x === "number")) {
-    console.error('TypeError: babel-plugin-jsdoc-to-assert\nExpected type: @param {number} x\nActual value:', x);
-    console.assert(typeof x === "number", 'Invalid JSDoc: typeof x === "number"');
+    console.assert(typeof x === "number", 'Expected type: @param {number} x\nActual value:', x, '\nFailure assertion: typeof x === "number"');
   }
 
   if (!(Array.isArray(y) && y.every(function (item) {
     return typeof item === "string";
   }))) {
-    console.error('TypeError: babel-plugin-jsdoc-to-assert\nExpected type: @param {Array.<string>} y\nActual value:', y);
     console.assert(Array.isArray(y) && y.every(function (item) {
       return typeof item === "string";
-    }), 'Invalid JSDoc: Array.isArray(y) && y.every(function(item){ return (typeof item === "string"); })');
+    }), 'Expected type: @param {Array.<string>} y\nActual value:', y, '\nFailure assertion: Array.isArray(y) && y.every(function(item){ return (typeof item === "string"); })');
   }
 }

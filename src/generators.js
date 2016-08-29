@@ -23,13 +23,12 @@ export class SpecGenerator {
 
   assert(expression) {
     const trimmedExpression = trimSpaceEachLine(expression.split("\n")).join("");
-    const title = `TypeError: babel-plugin-jsdoc-to-assert`;
     const expectedMessage = `Expected type: ${this.jsdocLikeString}`;
     const actualMessage = `Actual value:`;
+    const failureMessage = `Failure assertion:`;
     const actualValue = this.nameOfValue;
     return `if(!(${trimmedExpression})){
-      console.error('${title}\\n${expectedMessage}\\n${actualMessage}', ${actualValue});
-      console.assert(${trimmedExpression}, 'Invalid JSDoc: ${trimmedExpression}');
+      console.assert(${trimmedExpression}, '${expectedMessage}\\n${actualMessage}', ${actualValue},'\\n${failureMessage} ${trimmedExpression}');
 }`;
   }
 }
