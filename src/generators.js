@@ -28,7 +28,7 @@ export class SpecGenerator {
     const actualMessage = `Actual value:`;
     const actualValue = this.nameOfValue;
     return `if(!(${trimmedExpression})){
-      console.warn('${title}\\n${expectedMessage}\\n${actualMessage}', ${actualValue});
+      console.error('${title}\\n${expectedMessage}\\n${actualMessage}', ${actualValue});
       console.assert(${trimmedExpression}, 'Invalid JSDoc: ${trimmedExpression}');
 }`;
   }
