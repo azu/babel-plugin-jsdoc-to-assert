@@ -28,9 +28,11 @@ function maybeSkip(path) {
   return true;
 }
 
+/**
+ * @param {Object} [options]
+ * @returns {{Generator: *}}
+ */
 function useGenerator(options = {}) {
-  // default: console.assert
-
   // more simple console.assert
   if (options.simple) {
     return {
@@ -43,18 +45,18 @@ function useGenerator(options = {}) {
       Generator: ThrowGenerator
     }
   }
-  // assert
-  if (options.useSpecReporter) {
-    return {
-      Generator: SpecGenerator
-    }
-  }
+  // use `assert` module
+  // It depended on https://github.com/azu/babel-plugin-auto-import-assert
   if (options.useNodeAssert) {
     return {
       Generator: NodeAssertGenerator
     }
   }
-  return {};
+  // Default: SpecGenerator
+  // Readable output for human
+  return {
+    Generator: SpecGenerator
+  };
 }
 export default function({types: t, template}) {
   // work only { checkAtType: true }
