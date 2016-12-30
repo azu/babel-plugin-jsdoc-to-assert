@@ -21,6 +21,9 @@ function containTypeComment(comment) {
  * @returns {boolean}
  */
 function maybeSkip(path) {
+  if(path.__jsdoc_to_assert_checked__) {
+    return true;
+  }
   const {node} = path;
   if (node.leadingComments != null && node.leadingComments.length > 0) {
     return false;
@@ -96,6 +99,11 @@ export default function({types: t, template}) {
     if (asserts.length === 0) {
       return;
     }
+    // add check mark and it is not enumerable
+    Object.defineProperty(path, "__jsdoc_to_assert_checked__", {
+      enumerable: false,
+      value: true
+    });
     const functionDeclarationString = trimSpaceEachLine(asserts).join("\n");
     const builtAssert = template(functionDeclarationString)();
     const bodyPath = path.get("body");
