@@ -1,0 +1,13 @@
+{
+  "presets": [
+    "es2015"
+  ],
+  "plugins": [
+    [
+      "../../../src/",
+      {
+        "simple": true
+      }
+    ]
+  ]
+}
