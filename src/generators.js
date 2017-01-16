@@ -27,9 +27,7 @@ export class SpecGenerator {
     const actualMessage = `Actual value:`;
     const failureMessage = `Failure assertion:`;
     const actualValue = this.nameOfValue;
-    return `if(!(${trimmedExpression})){
-      console.assert(${trimmedExpression}, '${expectedMessage}\\n${actualMessage}', ${actualValue},'\\n${failureMessage} ${trimmedExpression}');
-}`;
+    return `console.assert(${trimmedExpression}, '${expectedMessage}\\n${actualMessage}', ${actualValue},'\\n${failureMessage} ${trimmedExpression}');`;
   }
 }
 export class ThrowGenerator {
