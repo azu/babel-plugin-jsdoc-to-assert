@@ -1,7 +1,6 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-import '../src/';
 import {transformFileSync} from 'babel-core';
 
 function normalize(str) {
