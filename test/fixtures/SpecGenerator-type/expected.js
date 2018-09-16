@@ -5,6 +5,7 @@ const value = "s";
 /**
  * @type {string[]}
  */
+
 console.assert(typeof value === "string", 'Expected type: @type {string} value\nActual value:', value, '\nFailure assertion: typeof value === "string"');
 const array = ["s"];
 console.assert(Array.isArray(array) && array.every(function (item) {
