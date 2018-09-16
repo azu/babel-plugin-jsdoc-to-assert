@@ -1,6 +1,5 @@
 {
   "plugins": [
     "../../../src/"
-    // use spec generator
   ]
 }

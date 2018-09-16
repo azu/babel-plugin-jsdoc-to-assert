@@ -4,7 +4,6 @@ const obj = {
    */
   log: function (message) {
     console.assert(typeof message === "string");
-
     console.log(message);
   }
 };

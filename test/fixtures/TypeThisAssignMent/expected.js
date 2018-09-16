@@ -6,4 +6,5 @@ class A {
     this.value = "s";
     console.assert(typeof this.value === "string");
   }
+
 }

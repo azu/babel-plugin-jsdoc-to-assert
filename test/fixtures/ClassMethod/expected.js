@@ -7,4 +7,5 @@ class X {
     console.assert(typeof x === "number");
     console.assert(typeof y === "string");
   }
+
 }
